@@ -10,4 +10,6 @@ export const SIZE = {
    CONTROL_ICON: 70,
    MIC_ICON: 80,
    MENU_ICON: 50,
+   HEADER: 35,
+   CONTEXT: 20,
 }

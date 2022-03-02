@@ -1,32 +1,22 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './components/Home';
+import List from './components/List';
 import Menu from './components/Menu';
+
+const Tab = createBottomTabNavigator();
 
 export default App = () => {
   return (
-    <SafeAreaView style={[styles.container]}>
-      <View style={[styles.container]}>
-        <Home/>
-      </View>
-      <View style={[styles.menu]}>
-        <Menu/>
-      </View>
-    </SafeAreaView>
+    <>
+      <NavigationContainer>
+        <Tab.Navigator screenOptions={{headerShown: false, tabBarStyle: { display: 'none' }}}>
+          <Tab.Screen name='Home' component={Home} />
+          <Tab.Screen name='List' component={List} />
+        </Tab.Navigator>
+      </NavigationContainer>
+      {/* <Menu></Menu> */}
+    </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 8,
-    padding: 20,
-    justifyContent: 'space-around',
-  },
-  menu: {
-    flex: 1
-  },
-})

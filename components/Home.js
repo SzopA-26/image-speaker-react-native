@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+   SafeAreaView,
    StyleSheet,
    Text,
    View,
@@ -7,8 +8,9 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { COLOR, SIZE } from '../assets/properties';
+import Menu from './Menu';
 
-export default Home = () => {
+export default Home = ({ navigation }) => {
    const [content, setContent] = useState('Example Document')
 
    const [centerBtn, setCenterBtn] = useState('play-arrow')
@@ -28,49 +30,65 @@ export default Home = () => {
    }
 
    return (
-      <>
-         <Text style={[styles.header]}>
-            ImageSpeaker
-         </Text>
-         <View style={[styles.content_block]}>
-            <Text style={[styles.content_text]} numberOfLines={1}>
-               {content}
+      <SafeAreaView style={[styles.container]}>
+         <View style={[styles.container]}>
+            <Text style={[styles.header]}>
+               ImageSpeaker
             </Text>
+            <View style={{flex: 1, justifyContent: 'space-around'}}>
+               <View style={[styles.content_block]}>
+                  <Text style={[styles.content_text]} numberOfLines={1}>
+                     {content}
+                  </Text>
+               </View>
+
+               <View style={{height: '16%', backgroundColor: COLOR.CONTROL_BTN_BGC}}></View>
+
+               <View style={[styles.control_panel]}>
+                  <TouchableOpacity style={[styles.control_btn, {transform: [{rotateY: '180deg'}]}]} >
+                     <Icon name={leftBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.control_btn]} onPress={centerBtnOnPress}>
+                     <Icon name={centerBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.control_btn]} >
+                     <Icon name={rightBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
+                  </TouchableOpacity>
+               </View>
+
+               <TouchableOpacity style={[styles.mic_btn]}>
+                  <Icon name='mic' color={COLOR.SEC_TEXT_COLOR} size={SIZE.MIC_ICON}/>
+               </TouchableOpacity>
+            </View>
          </View>
-
-         <View style={{height: '16%', backgroundColor: COLOR.CONTROL_BTN_BGC}}></View>
-
-         <View style={[styles.control_panel]}>
-            <TouchableOpacity style={[styles.control_btn, {transform: [{rotateY: '180deg'}]}]} >
-               <Icon name={leftBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.control_btn]} onPress={centerBtnOnPress}>
-               <Icon name={centerBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.control_btn]} >
-               <Icon name={rightBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
-            </TouchableOpacity>
+         <View style={[styles.menu]}>
+            <Menu navigation={navigation}/>
          </View>
-
-         <TouchableOpacity style={[styles.mic_btn]}>
-            <Icon name='mic' color={COLOR.SEC_TEXT_COLOR} size={SIZE.MIC_ICON}/>
-         </TouchableOpacity>
-      </>
+      </SafeAreaView>
    );
 };
  
 const styles = StyleSheet.create({
+   container: {
+      flex: 8,
+      padding: 20,
+      // justifyContent: 'space-around',
+   },
+   menu: {
+      flex: 1
+   },
    header: {
-      fontSize: 35,
+      fontSize: SIZE.HEADER,
       color: COLOR.MAIN_TEXT_COLOR,
       fontWeight: 'bold',
+      marginVertical: '5%'
    },
    content_block: {
       backgroundColor: COLOR.CONTEXT_BGC
    },
    content_text: {
       color: COLOR.MAIN_TEXT_COLOR,
-      fontSize: 20,
+      fontSize: SIZE.CONTEXT,
       fontWeight: 'bold',
       paddingHorizontal: 15,
       paddingVertical: 15,

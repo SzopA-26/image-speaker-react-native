@@ -26,7 +26,7 @@ const docPicker = async () => {
    } 
 }
 
-export default Menu = () => {
+export default Menu = (props) => {
    const actionSheet = useRef()
    const optionArray = [
       'Take Photo', 'Choose From Library', 'PDF File', 'Cancel'
@@ -39,13 +39,13 @@ export default Menu = () => {
       <>
          <Divider width={2.5} color={COLOR.MAIN_TEXT_COLOR}/>
          <View style={[styles.menubar]}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
                <Icon name='home' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
             </TouchableOpacity>
             <TouchableOpacity onPress={showActionSheet}>
                <Icon name='add-circle' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => props.navigation.navigate('List')}>
                <Icon name='video-library' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
             </TouchableOpacity>
          </View>
