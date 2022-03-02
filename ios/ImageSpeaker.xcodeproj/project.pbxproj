@@ -111,7 +111,6 @@
 			children = (
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -154,7 +153,6 @@
 				0B54639FD859DE3F28B6E801 /* Pods-ImageSpeaker-ImageSpeakerTests.debug.xcconfig */,
 				2A35EACFD31D40CECC1D6272 /* Pods-ImageSpeaker-ImageSpeakerTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -441,6 +439,7 @@
 			baseConfigurationReference = 0B54639FD859DE3F28B6E801 /* Pods-ImageSpeaker-ImageSpeakerTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = LGR6SN4ZG3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -469,6 +468,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = LGR6SN4ZG3;
 				INFOPLIST_FILE = ImageSpeakerTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -494,6 +494,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LGR6SN4ZG3;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ImageSpeaker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -520,6 +521,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LGR6SN4ZG3;
 				INFOPLIST_FILE = ImageSpeaker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
