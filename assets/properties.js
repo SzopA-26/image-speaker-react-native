@@ -4,6 +4,9 @@ export const COLOR = {
    CONTEXT_BGC: '#E4EAF0',
    CONTROL_BTN_BGC: '#CEDEFF',
    MIC_BTN_BGC: '#A3BCEF',
+   ITEM_NAME: 'black',
+   ITEM_DURATION: '#C4C4C4',
+   ITEM_DIVIDER: '#C4C4C4',
 }
 
 export const SIZE = {
@@ -12,4 +15,5 @@ export const SIZE = {
    MENU_ICON: 50,
    HEADER: 35,
    CONTEXT: 20,
+   ITEM: 20,
 }
