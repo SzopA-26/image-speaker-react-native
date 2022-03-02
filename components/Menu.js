@@ -1,8 +1,6 @@
 import React, {useRef} from 'react'
 import {
    StyleSheet,
-   Text,
-   Touchable,
    TouchableOpacity,
    View,
 } from 'react-native';
@@ -67,7 +65,6 @@ export default Menu = () => {
                   res = await docPicker()
                }
                console.log(res)
-               alert(res)
             }}
          />
       </>
