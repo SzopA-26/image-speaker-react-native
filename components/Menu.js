@@ -29,7 +29,7 @@ const docPicker = async () => {
 export default Menu = () => {
    const actionSheet = useRef();
    const optionArray = [
-      'Camera', 'Gallery', 'Document', 'Cancel'
+      'Take Photo', 'Choose From Library', 'PDF File', 'Cancel'
    ]
    const showActionSheet = () => {
       actionSheet.current.show()
@@ -52,7 +52,7 @@ export default Menu = () => {
 
          <ActionSheet
             ref={actionSheet}
-            title={'How ?'}
+            title={'Select an Image or PDF File.'}
             options={optionArray}
             cancelButtonIndex={3}
             onPress={(index) => {
