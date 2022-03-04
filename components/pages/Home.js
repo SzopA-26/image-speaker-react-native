@@ -46,15 +46,15 @@ export default Home = ({ navigation }) => {
                <TouchableOpacity style={[styles.control_btn, {transform: [{rotateY: '180deg'}]}]} >
                   <Icon name={leftBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
-               <TouchableOpacity style={[styles.control_btn]} onPress={centerBtnOnPress}>
+               <TouchableOpacity style={styles.control_btn} onPress={centerBtnOnPress}>
                   <Icon name={centerBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
-               <TouchableOpacity style={[styles.control_btn]} >
+               <TouchableOpacity style={styles.control_btn} >
                   <Icon name={rightBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={[styles.mic_btn]}>
+            <TouchableOpacity style={styles.mic_btn}>
                <Icon name='mic' color={COLOR.SEC_TEXT_COLOR} size={SIZE.MIC_ICON}/>
             </TouchableOpacity>
          </View>
@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
       color: COLOR.MAIN_TEXT_COLOR,
       fontSize: SIZE.CONTEXT,
       fontWeight: 'bold',
-      paddingHorizontal: 15,
-      paddingVertical: 15,
+      paddingHorizontal: '5%',
+      paddingVertical: '5%',
    },
    control_panel: {
       flexDirection: 'row', 

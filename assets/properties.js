@@ -17,7 +17,7 @@ export const SIZE = {
    MENU_ICON: 50,
    HEADER: 35,
    CONTEXT: 20,
-   ITEM: 20,
+   ITEM: 16,
 }
 
 export const STYLES = StyleSheet.create({

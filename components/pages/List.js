@@ -17,7 +17,7 @@ export default List = ({ navigation }) => {
       duration: '00:00:34'
     },
     {
-      name: 'Long Titleeeeeeeeeeee',
+      name: 'Long Titleeeeeeeeeeeeeeee',
       duration: '00:39:07'
     },
     {
@@ -30,6 +30,21 @@ export default List = ({ navigation }) => {
     },
   ])
 
+  const Item = ({item}) => {
+    return (
+      <TouchableOpacity style={styles.item} onPress={() => alert(item.name)}>
+        <View style={styles.item_img}></View>
+        <View style={styles.item_detail}>
+          <Text style={styles.item_name} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.item_duration} numberOfLines={1}>{item.duration}</Text>
+        </View>
+        <View style={styles.play_btn}>
+          <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   return (
     <Container navigator={navigation}>
       <Text style={[STYLES.HEADER]}>
@@ -41,32 +56,14 @@ export default List = ({ navigation }) => {
             if (item.name === items[0].name) {
               return (
                 <View key={item.name+'-'+item.duration}>
-                  <TouchableOpacity style={[styles.item]}>
-                    <View style={[styles.item_img]}></View>
-                    <View style={[styles.item_detail]}>
-                      <Text style={[styles.item_name]} numberOfLines={1}>{item.name}</Text>
-                      <Text style={[styles.item_duration]} numberOfLines={1}>{item.duration}</Text>
-                    </View>
-                    <View style={[styles.play_btn]}>
-                      <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
-                    </View>
-                  </TouchableOpacity>
+                  <Item item={item}/>
                 </View>
               )
-            }
+            } 
             return (
               <View key={item.name+'-'+item.duration}>
                 <Divider width={1.5} color={COLOR.ITEM_DIVIDER} style={[styles.divider]}></Divider>
-                <TouchableOpacity style={[styles.item]}>
-                  <View style={[styles.item_img]}></View>
-                  <View style={[styles.item_detail]}>
-                    <Text style={[styles.item_name]} numberOfLines={1}>{item.name}</Text>
-                    <Text style={[styles.item_duration]} numberOfLines={1}>{item.duration}</Text>
-                  </View>
-                  <View style={[styles.play_btn]}>
-                    <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
-                  </View>
-                </TouchableOpacity>
+                <Item item={item}/>
               </View>
             )
           })
@@ -103,7 +100,8 @@ const styles = StyleSheet.create({
   },
   play_btn: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end'
   },
   divider: {
     marginVertical: '5%',
