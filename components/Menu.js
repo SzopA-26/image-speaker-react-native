@@ -3,6 +3,7 @@ import {
    StyleSheet,
    TouchableOpacity,
    View,
+   Text,
 } from 'react-native';
 import { Divider, Icon } from 'react-native-elements';
 import { COLOR, SIZE } from '../assets/properties';
@@ -26,7 +27,7 @@ const docPicker = async () => {
    } 
 }
 
-export default Menu = (props) => {
+export default Menu = ({ navigator }) => {
    const actionSheet = useRef()
    const optionArray = [
       'Take Photo', 'Choose From Library', 'PDF File', 'Cancel'
@@ -39,13 +40,13 @@ export default Menu = (props) => {
       <>
          <Divider width={2.5} color={COLOR.MAIN_TEXT_COLOR}/>
          <View style={[styles.menubar]}>
-            <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
+            <TouchableOpacity onPress={() => navigator.navigate('Home')}>
                <Icon name='home' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
             </TouchableOpacity>
             <TouchableOpacity onPress={showActionSheet}>
                <Icon name='add-circle' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => props.navigation.navigate('List')}>
+            <TouchableOpacity onPress={() => navigator.navigate('List')}>
                <Icon name='video-library' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
             </TouchableOpacity>
          </View>

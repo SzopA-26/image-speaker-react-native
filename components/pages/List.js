@@ -1,18 +1,21 @@
 import React, {useState} from 'react'
 import { 
   StyleSheet,
-  SafeAreaView,
   View,
   Text, 
   ScrollView,
   TouchableOpacity
 } from 'react-native'
 import { Divider, Icon } from 'react-native-elements';
-import { COLOR, SIZE } from '../assets/properties';
-import Menu from './Menu'
+import { COLOR, SIZE, STYLES } from '../../assets/properties';
+import Container from '../Container';
 
 export default List = ({ navigation }) => {
   const [items, setItems] = useState([
+    {
+      name: 'Example Document',
+      duration: '00:00:34'
+    },
     {
       name: 'Long Titleeeeeeeeeeee',
       duration: '00:39:07'
@@ -28,33 +31,16 @@ export default List = ({ navigation }) => {
   ])
 
   return (
-    <SafeAreaView style={[styles.container]}>
-      <View style={[styles.container]}>
-        <Text style={[styles.header]}>
-            ImageSpeaker
-        </Text>
-        <ScrollView style={[styles.list_menu]}>
-          {
-            items.map((item) => {
-              if (item.name === items[0].name) {
-                return (
-                  <View key={item.name+'-'+item.duration}>
-                    <TouchableOpacity style={[styles.item]}>
-                      <View style={[styles.item_img]}></View>
-                      <View style={[styles.item_detail]}>
-                        <Text style={[styles.item_name]} numberOfLines={1}>{item.name}</Text>
-                        <Text style={[styles.item_duration]} numberOfLines={1}>{item.duration}</Text>
-                      </View>
-                      <View style={[styles.play_btn]}>
-                        <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                )
-              }
+    <Container navigator={navigation}>
+      <Text style={[STYLES.HEADER]}>
+          ImageSpeaker
+      </Text>
+      <ScrollView style={[styles.list_menu]}>
+        {
+          items.map((item) => {
+            if (item.name === items[0].name) {
               return (
                 <View key={item.name+'-'+item.duration}>
-                  <Divider width={1.5} color={COLOR.ITEM_DIVIDER} style={[styles.divider]}></Divider>
                   <TouchableOpacity style={[styles.item]}>
                     <View style={[styles.item_img]}></View>
                     <View style={[styles.item_detail]}>
@@ -67,34 +53,32 @@ export default List = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
               )
-            })
-          }
-          
-        </ScrollView>
-      </View>
-      <View style={[styles.menu]}>
-        <Menu navigation={navigation}/>
-      </View>
-    </SafeAreaView>
+            }
+            return (
+              <View key={item.name+'-'+item.duration}>
+                <Divider width={1.5} color={COLOR.ITEM_DIVIDER} style={[styles.divider]}></Divider>
+                <TouchableOpacity style={[styles.item]}>
+                  <View style={[styles.item_img]}></View>
+                  <View style={[styles.item_detail]}>
+                    <Text style={[styles.item_name]} numberOfLines={1}>{item.name}</Text>
+                    <Text style={[styles.item_duration]} numberOfLines={1}>{item.duration}</Text>
+                  </View>
+                  <View style={[styles.play_btn]}>
+                    <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )
+          })
+        }
+      </ScrollView>
+    </Container>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 8,
-    padding: 20,
-  },
-  menu: {
-    flex: 1
-  },
-  header: {
-    fontSize: SIZE.HEADER,
-    color: COLOR.MAIN_TEXT_COLOR,
-    fontWeight: 'bold',
-    marginVertical: '5%',
-    marginBottom: '10%',
-  },
   list_menu: {
+    marginTop: '5%',
   },
   item: {
     flexDirection: 'row',

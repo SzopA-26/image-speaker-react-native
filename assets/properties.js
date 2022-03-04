@@ -1,3 +1,5 @@
+import { StyleSheet } from "react-native"
+
 export const COLOR = {
    MAIN_TEXT_COLOR: '#4267B2',
    SEC_TEXT_COLOR: 'white',
@@ -17,3 +19,12 @@ export const SIZE = {
    CONTEXT: 20,
    ITEM: 20,
 }
+
+export const STYLES = StyleSheet.create({
+   HEADER: {
+      fontSize: SIZE.HEADER,
+      color: COLOR.MAIN_TEXT_COLOR,
+      fontWeight: 'bold',
+      marginVertical: '5%'
+   },
+})
