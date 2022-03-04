@@ -22,7 +22,7 @@ export default Container = ({ children, navigator }) => {
 
 const styles = StyleSheet.create({
    area: {
-      height: '100%',      
+      flex: 1
    },
    container: {
       paddingHorizontal: '4%',

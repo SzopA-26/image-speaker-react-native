@@ -4,6 +4,7 @@ import {
    TouchableOpacity,
    View,
    Text,
+   Platform,
 } from 'react-native';
 import { Divider, Icon } from 'react-native-elements';
 import { COLOR, SIZE } from '../assets/properties';
@@ -76,6 +77,13 @@ const styles = StyleSheet.create({
    menubar: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      marginTop: '5%'
+      ...Platform.select({
+         android: {
+            marginTop: '3%',
+         },
+         ios: {
+            marginTop: '5%'
+         }
+      })
    }
 })

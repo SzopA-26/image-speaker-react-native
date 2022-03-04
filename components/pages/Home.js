@@ -3,7 +3,8 @@ import {
    StyleSheet,
    Text,
    View,
-   TouchableOpacity
+   TouchableOpacity,
+   Pressable,
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { COLOR, SIZE, STYLES } from '../../assets/properties';
@@ -54,9 +55,17 @@ export default Home = ({ navigation }) => {
                </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.mic_btn}>
+            <Pressable style={({ pressed }) => [
+               {
+                  height: '20%',
+                  backgroundColor: pressed ? COLOR.MIC_BTN_BGC : COLOR.MAIN_TEXT_COLOR,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+               }
+            ]}>
                <Icon name='mic' color={COLOR.SEC_TEXT_COLOR} size={SIZE.MIC_ICON}/>
-            </TouchableOpacity>
+            </Pressable>
          </View>
       </Container>
    );
@@ -64,12 +73,13 @@ export default Home = ({ navigation }) => {
  
 const styles = StyleSheet.create({
    panel: {
-      justifyContent: 'space-around', 
+      justifyContent: 'space-around',
       flex: 1, 
       paddingBottom: '5%',
    },
    content_block: {
-      backgroundColor: COLOR.CONTEXT_BGC
+      backgroundColor: COLOR.CONTEXT_BGC,
+      borderRadius: 8,
    },
    content_text: {
       color: COLOR.MAIN_TEXT_COLOR,
@@ -81,7 +91,6 @@ const styles = StyleSheet.create({
    control_panel: {
       flexDirection: 'row', 
       justifyContent: 'space-between', 
-      width: '100%', 
       height: '15%',
    },
    control_btn: {
@@ -89,12 +98,7 @@ const styles = StyleSheet.create({
       backgroundColor: COLOR.CONTROL_BTN_BGC,
       width: '30%',
       justifyContent: 'center',
-      alignItems: 'center'
-   },
-   mic_btn: {
-      height: '20%',
-      backgroundColor: COLOR.MIC_BTN_BGC,
-      justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      borderRadius: 8,
    },
 });

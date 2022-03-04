@@ -4,7 +4,8 @@ import {
   View,
   Text, 
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Image,
 } from 'react-native'
 import { Divider, Icon } from 'react-native-elements';
 import { COLOR, SIZE, STYLES } from '../../assets/properties';
@@ -33,7 +34,14 @@ export default List = ({ navigation }) => {
   const Item = ({item}) => {
     return (
       <TouchableOpacity style={styles.item} onPress={() => alert(item.name)}>
-        <View style={styles.item_img}></View>
+        <View style={styles.item_img}>
+          <Image
+            style={{width: SIZE.IMG, height: SIZE.IMG}}
+            source={{
+              uri: 'https://reactnative.dev/img/tiny_logo.png'
+            }}
+          />     
+        </View>   
         <View style={styles.item_detail}>
           <Text style={styles.item_name} numberOfLines={1}>{item.name}</Text>
           <Text style={styles.item_duration} numberOfLines={1}>{item.duration}</Text>
@@ -82,8 +90,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: '7%',
   },
   item_img: {
-    backgroundColor: 'red', 
     marginRight: '7%',
+    // height: '100%',
     flex: 1,
   },
   item_detail: {

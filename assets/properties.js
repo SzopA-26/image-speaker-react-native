@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native"
+import { PixelRatio, StyleSheet } from "react-native"
 
 export const COLOR = {
    MAIN_TEXT_COLOR: '#4267B2',
@@ -12,12 +12,17 @@ export const COLOR = {
 }
 
 export const SIZE = {
-   CONTROL_ICON: 70,
-   MIC_ICON: 80,
-   MENU_ICON: 50,
+
+   // icon
+   CONTROL_ICON: 70/3 * PixelRatio.get(),
+   MIC_ICON: 80/3 * PixelRatio.get(),
+   MENU_ICON: 50/3 * PixelRatio.get(),
+
+   // font & img
    HEADER: 35,
    CONTEXT: 20,
    ITEM: 16,
+   IMG: 55
 }
 
 export const STYLES = StyleSheet.create({
