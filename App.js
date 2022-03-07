@@ -16,7 +16,7 @@ export default App = () => {
             tabBarStyle: { display: 'none' }
           }}
         >
-          <Tab.Screen name='Home' component={Home} />
+          <Tab.Screen name='Home' component={Home} initialParams={{ document: 0 }}/>
           <Tab.Screen name='List' component={List} />
         </Tab.Navigator>
       </NavigationContainer>

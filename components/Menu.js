@@ -29,6 +29,7 @@ const docPicker = async () => {
 }
 
 export default Menu = ({ navigator }) => {
+
    const actionSheet = useRef()
    const optionArray = [
       'Take Photo', 'Choose From Library', 'PDF File', 'Cancel'

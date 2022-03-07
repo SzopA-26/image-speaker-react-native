@@ -3,7 +3,7 @@ import { PixelRatio, StyleSheet } from "react-native"
 export const COLOR = {
    MAIN_TEXT_COLOR: '#4267B2',
    SEC_TEXT_COLOR: 'white',
-   CONTEXT_BGC: '#E4EAF0',
+   DOCUMENT_BGC: '#E4EAF0',
    CONTROL_BTN_BGC: '#CEDEFF',
    MIC_BTN_BGC: '#A3BCEF',
    ITEM_NAME: 'black',
@@ -20,7 +20,7 @@ export const SIZE = {
 
    // font & img
    HEADER: 35,
-   CONTEXT: 20,
+   DOCUMENT: 20,
    ITEM: 16,
    IMG: 55
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
    StyleSheet,
    Text,
@@ -10,47 +10,77 @@ import { Icon } from 'react-native-elements';
 import { COLOR, SIZE, STYLES } from '../../assets/properties';
 import Container from '../Container';
 
-export default Home = ({ navigation }) => {
-   const [content, setContent] = useState('Example Document')
+export default Home = ({ route, navigation }) => {
+   const { document } = route.params
 
+   const [playerState, setPlayerStaet] = useState(-1)
    const [centerBtn, setCenterBtn] = useState('play-arrow')
    const [rightBtn, setRightBtn] = useState('skip-next')
    const [leftBtn, setLeftBtn] = useState('skip-next')
 
-   const centerBtnOnPress = () => {
-      if (centerBtn === 'play-arrow') {
+   const centerBtnOnPress = (playerState) => {
+      setPlayerStaet(playerState)
+
+      // play
+      if (playerState > 0) {
          setCenterBtn('pause')
          setRightBtn('fast-forward')
          setLeftBtn('fast-forward')
-      } else {
+      } 
+      // pause
+      else {
          setCenterBtn('play-arrow')
          setRightBtn('skip-next')
          setLeftBtn('skip-next')
       }
    }
 
+   const rightBtnOnPress = () => {
+      if (playerState > 0) {
+         alert('forward pressed !')
+      }
+      else {
+         alert('next pressed !')
+      }
+   }
+
+   const leftBtnOnPress = () => {
+      if (playerState > 0) {
+         alert('backward pressed !')
+      }
+      else {
+         alert('previous pressed !')
+      }
+   }
+
+   useEffect(() => {
+
+   }, [])
+
    return (
-      <Container navigator={navigation}>
+      <Container navigator={navigation} currentDoc={document}>
          <Text style={STYLES.HEADER}>
             ImageSpeaker
          </Text>
          <View style={styles.panel}>
-            <View style={styles.content_block}>
-               <Text style={styles.content_text} numberOfLines={1}>
-                  {content}
+            <View style={styles.document_block}>
+               <Text style={styles.document_text} numberOfLines={1}>
+                  {JSON.stringify(document)}
                </Text>
             </View>
 
-            <View style={{height: '16%', backgroundColor: COLOR.CONTROL_BTN_BGC}}></View>
+            <View style={{height: '16%', backgroundColor: COLOR.CONTROL_BTN_BGC}}>
+               <Text>player state : {playerState}</Text>
+            </View>
 
             <View style={[styles.control_panel]}>
-               <TouchableOpacity style={[styles.control_btn, {transform: [{rotateY: '180deg'}]}]} >
+               <TouchableOpacity style={[styles.control_btn, {transform: [{rotateY: '180deg'}]}]} onPress={leftBtnOnPress}>
                   <Icon name={leftBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
-               <TouchableOpacity style={styles.control_btn} onPress={centerBtnOnPress}>
+               <TouchableOpacity style={styles.control_btn} onPress={() => centerBtnOnPress(playerState * -1)}>
                   <Icon name={centerBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
-               <TouchableOpacity style={styles.control_btn} >
+               <TouchableOpacity style={styles.control_btn} onPress={rightBtnOnPress}>
                   <Icon name={rightBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
             </View>
@@ -77,13 +107,13 @@ const styles = StyleSheet.create({
       flex: 1, 
       paddingBottom: '5%',
    },
-   content_block: {
-      backgroundColor: COLOR.CONTEXT_BGC,
+   document_block: {
+      backgroundColor: COLOR.DOCUMENT_BGC,
       borderRadius: 8,
    },
-   content_text: {
+   document_text: {
       color: COLOR.MAIN_TEXT_COLOR,
-      fontSize: SIZE.CONTEXT,
+      fontSize: SIZE.DOCUMENT,
       fontWeight: 'bold',
       paddingHorizontal: '5%',
       paddingVertical: '5%',

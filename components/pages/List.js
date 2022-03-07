@@ -14,26 +14,36 @@ import Container from '../Container';
 export default List = ({ navigation }) => {
   const [items, setItems] = useState([
     {
+      id: 0,
       name: 'Example Document',
       duration: '00:00:34'
     },
     {
-      name: 'Long Titleeeeeeeeeeeeeeee',
+      id: 1,
+      name: 'tha amazing avanger super tornado assemble ultimate ultron',
       duration: '00:39:07'
     },
     {
+      id: 2,
       name: 'Book2',
       duration: '01:23:45'
     },
     {
+      id: 3,
       name: 'Book3',
       duration: '01:23:45'
     },
   ])
 
+  const itemOnPress = (item) => {
+    navigation.navigate('Home', {
+      document: item.id
+    })
+  }
+
   const Item = ({item}) => {
     return (
-      <TouchableOpacity style={styles.item} onPress={() => alert(item.name)}>
+      <TouchableOpacity style={styles.item} onPress={() => itemOnPress(item)}>
         <View style={styles.item_img}>
           <Image
             style={{width: SIZE.IMG, height: SIZE.IMG}}
@@ -43,7 +53,7 @@ export default List = ({ navigation }) => {
           />     
         </View>   
         <View style={styles.item_detail}>
-          <Text style={styles.item_name} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.item_name} numberOfLines={2}>{item.name}</Text>
           <Text style={styles.item_duration} numberOfLines={1}>{item.duration}</Text>
         </View>
         <View style={styles.play_btn}>
@@ -61,16 +71,16 @@ export default List = ({ navigation }) => {
       <ScrollView style={[styles.list_menu]}>
         {
           items.map((item) => {
-            if (item.name === items[0].name) {
+            if (item.name !== items[0].name) {
               return (
                 <View key={item.name+'-'+item.duration}>
+                  <Divider width={1.5} color={COLOR.ITEM_DIVIDER} style={[styles.divider]}></Divider>
                   <Item item={item}/>
                 </View>
               )
             } 
             return (
               <View key={item.name+'-'+item.duration}>
-                <Divider width={1.5} color={COLOR.ITEM_DIVIDER} style={[styles.divider]}></Divider>
                 <Item item={item}/>
               </View>
             )
@@ -91,7 +101,6 @@ const styles = StyleSheet.create({
   },
   item_img: {
     marginRight: '7%',
-    // height: '100%',
     flex: 1,
   },
   item_detail: {
