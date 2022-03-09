@@ -1,9 +1,17 @@
 export const GET_DOCS = 'GET_DOCS';
+export const SET_DOCS = 'SET_DOCS';
 export const GET_CURRENT_DOC = 'GET_CURRENT_DOC';
 export const SET_CURRENT_DOC = 'SET_CURRENT_DOC';
 export const NEXT_DOC = 'NEXT_DOC';
 export const PREVIOUS_DOC = 'PREVIOUS_DOC';
 export const ADD_DOC = 'ADD_DOC';
+
+export const setDocs = (docs) => {
+    return {
+        type: SET_DOCS,
+        playload: docs,
+    }
+}
 
 export const setCurrentDoc = (doc) => {
     return {

@@ -7,11 +7,13 @@ import {
    Pressable,
 } from 'react-native';
 import { Icon } from 'react-native-elements';
-import { COLOR, SIZE, STYLES } from '../../assets/properties';
-import Container from '../Container';
+import { COLOR, SIZE, STYLES, DATABASE_NAME, TABLE_NAME } from '../assets/properties';
+import Container from './components/Container';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { nextDoc, previousDoc } from '../../services/redux/actions';
+import { nextDoc, previousDoc, setCurrentDoc, setDocs } from '../services/redux/actions';
+
+import { db } from '../App'
 
 export default Home = ({ navigation }) => {
    const docs = useSelector(state => state.docs)
@@ -62,8 +64,36 @@ export default Home = ({ navigation }) => {
       }
    }
 
+   const findById = (id) => {
+      for (let i=0; i<docs.length; i++) {
+         if (id === docs[i].id) {
+            return docs[i]
+         }
+      }
+      return {
+         name: 'Documents not found.'
+      }
+   }
+
+   const setupData = () => {
+      db.transaction((tx) => {
+         tx.executeSql(
+            "SELECT * FROM " + TABLE_NAME + ";",
+            [],
+            (tx, result) => {
+               const documents = []
+               for (let i=0; i<result.rows.length; i++) {
+                  console.log('setup ' + JSON.stringify(result.rows.item(i)));
+                  documents[i] = result.rows.item(i)
+                  dispatch(setDocs(documents))
+               }
+            }
+         )
+      })
+    }
+
    useEffect(() => {
-     
+      setupData()
    }, [])
 
    return (
@@ -74,14 +104,14 @@ export default Home = ({ navigation }) => {
          <View style={styles.panel}>
             <View style={styles.document_block}>
                <Text style={styles.document_text} numberOfLines={1}>
-                  {JSON.stringify(docs[currentDoc])}
+                  {JSON.stringify(findById(currentDoc))}
                </Text>
             </View>
 
             <View style={{height: '16%', backgroundColor: COLOR.CONTROL_BTN_BGC}}>
                <Text>player state : {playerState}</Text>
                <Text>
-                  {JSON.stringify(docs[currentDoc])}
+                  {JSON.stringify(findById(currentDoc))}
                </Text>
             </View>
 

@@ -20,6 +20,7 @@ export default List = ({ navigation }) => {
 
   const itemOnPress = (item) => {
     dispatch(setCurrentDoc(item.id))
+    console.log('id ' + item.id);
     navigation.navigate('Home')
   }
 
@@ -30,6 +31,12 @@ export default List = ({ navigation }) => {
         uri: item.uri
       }
     }
+    let hour = Math.floor(item.duration/3600)
+    hour = hour < 10 ? '0' + hour : '' + hour
+    let min = Math.floor((item.duration%3600)/60)
+    min = min < 10 ? '0' + min : '' + min
+    let sec = (item.duration%3600)%60
+    sec = sec < 10 ? '0' + sec : '' + sec
     return (
       <TouchableOpacity style={styles.item} onPress={() => itemOnPress(item)}>
         <View style={styles.item_img}>
@@ -40,7 +47,9 @@ export default List = ({ navigation }) => {
         </View>   
         <View style={styles.item_detail}>
           <Text style={styles.item_name} numberOfLines={2}>{item.name}</Text>
-          <Text style={styles.item_duration} numberOfLines={1}>{item.duration}</Text>
+          <Text style={styles.item_duration} numberOfLines={1}>
+            {hour + ':' + min + ':' + sec}
+          </Text>
         </View>
         <View style={styles.play_btn}>
           <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>

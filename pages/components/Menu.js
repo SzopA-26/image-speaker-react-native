@@ -3,7 +3,6 @@ import {
    StyleSheet,
    TouchableOpacity,
    View,
-   Text,
    Platform,
 } from 'react-native';
 import { Divider, Icon } from 'react-native-elements';
@@ -12,6 +11,8 @@ import { COLOR, SIZE } from '../../assets/properties';
 import ActionSheet from "react-native-actionsheet";
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
+
+import { db } from '../../App'
 
 const docPicker = async () => {
    try {
@@ -27,6 +28,18 @@ const docPicker = async () => {
       return null
    } 
 }
+
+const insertDocument = (doc) => {
+   db.transaction((tx) => {
+      tx.executeSql(
+         "INSERT INTO Documents (name, duration, currentTime, uri, content) "
+         + "VALUES ('" + doc.name + "', " + doc.duration + ", " + doc.currentTime + ", '" + doc.uri + "', '" + doc.content + "');",
+         [],
+         () => {console.log("insert " + doc.name + " document success.")},
+         error => {console.log(error)}
+      )
+   })
+ }
 
 export default Menu = ({ navigator }) => {
 
@@ -68,6 +81,13 @@ export default Menu = ({ navigator }) => {
                   res = await docPicker()
                }
                console.log(res)
+               // insertDocument({
+               //   name: 'sqlite4',
+               //   duration: 1345,
+               //   currentTime: 0,
+               //   uri: 'https://cdn-images-1.medium.com/max/280/1*lKN9xV1YEin-2wfAiGySBA.png',
+               //   content: 'content',
+               // })
             }}
          />
       </>

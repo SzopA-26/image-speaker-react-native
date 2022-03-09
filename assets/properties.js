@@ -1,5 +1,8 @@
 import { PixelRatio, StyleSheet } from "react-native"
 
+export const DATABASE_NAME = 'image-speaker'
+export const TABLE_NAME = 'Documents'
+
 export const COLOR = {
    MAIN_TEXT_COLOR: '#4267B2',
    SEC_TEXT_COLOR: 'white',
