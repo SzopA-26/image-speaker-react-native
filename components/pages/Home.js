@@ -10,16 +10,21 @@ import { Icon } from 'react-native-elements';
 import { COLOR, SIZE, STYLES } from '../../assets/properties';
 import Container from '../Container';
 
-export default Home = ({ route, navigation }) => {
-   const { document } = route.params
+import { useSelector, useDispatch } from 'react-redux';
+import { nextDoc, previousDoc } from '../../services/actions';
 
-   const [playerState, setPlayerStaet] = useState(-1)
+export default Home = ({ navigation }) => {
+   const docs = useSelector(state => state.docs)
+   const currentDoc = useSelector(state => state.currentDoc)
+   const dispatch = useDispatch()
+
+   const [playerState, setPlayerState] = useState(-1)
    const [centerBtn, setCenterBtn] = useState('play-arrow')
    const [rightBtn, setRightBtn] = useState('skip-next')
    const [leftBtn, setLeftBtn] = useState('skip-next')
 
    const centerBtnOnPress = (playerState) => {
-      setPlayerStaet(playerState)
+      setPlayerState(playerState)
 
       // play
       if (playerState > 0) {
@@ -36,41 +41,48 @@ export default Home = ({ route, navigation }) => {
    }
 
    const rightBtnOnPress = () => {
+      // forward
       if (playerState > 0) {
          alert('forward pressed !')
       }
+      // next
       else {
-         alert('next pressed !')
+         dispatch(nextDoc())
       }
    }
 
    const leftBtnOnPress = () => {
+      // backward
       if (playerState > 0) {
          alert('backward pressed !')
       }
+      // previous
       else {
-         alert('previous pressed !')
+         dispatch(previousDoc())
       }
    }
 
    useEffect(() => {
-
+     
    }, [])
 
    return (
-      <Container navigator={navigation} currentDoc={document}>
+      <Container navigator={navigation}>
          <Text style={STYLES.HEADER}>
             ImageSpeaker
          </Text>
          <View style={styles.panel}>
             <View style={styles.document_block}>
                <Text style={styles.document_text} numberOfLines={1}>
-                  {JSON.stringify(document)}
+                  {JSON.stringify(docs[currentDoc])}
                </Text>
             </View>
 
             <View style={{height: '16%', backgroundColor: COLOR.CONTROL_BTN_BGC}}>
                <Text>player state : {playerState}</Text>
+               <Text>
+                  {JSON.stringify(docs[currentDoc])}
+               </Text>
             </View>
 
             <View style={[styles.control_panel]}>

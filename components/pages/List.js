@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react';
 import { 
   StyleSheet,
   View,
@@ -11,34 +11,16 @@ import { Divider, Icon } from 'react-native-elements';
 import { COLOR, SIZE, STYLES } from '../../assets/properties';
 import Container from '../Container';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentDoc } from '../../services/actions';
+
 export default List = ({ navigation }) => {
-  const [items, setItems] = useState([
-    {
-      id: 0,
-      name: 'Example Document',
-      duration: '00:00:34'
-    },
-    {
-      id: 1,
-      name: 'tha amazing avanger super tornado assemble ultimate ultron',
-      duration: '00:39:07'
-    },
-    {
-      id: 2,
-      name: 'Book2',
-      duration: '01:23:45'
-    },
-    {
-      id: 3,
-      name: 'Book3',
-      duration: '01:23:45'
-    },
-  ])
+  const items = useSelector(state => state.docs)
+  const dispatch = useDispatch()
 
   const itemOnPress = (item) => {
-    navigation.navigate('Home', {
-      document: item.id
-    })
+    dispatch(setCurrentDoc(item.id))
+    navigation.navigate('Home')
   }
 
   const Item = ({item}) => {
