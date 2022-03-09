@@ -24,14 +24,18 @@ export default List = ({ navigation }) => {
   }
 
   const Item = ({item}) => {
+    let imgSource = require('../../assets/pdf-icon.png')
+    if (item.uri !== '') {
+      imgSource = {
+        uri: item.uri
+      }
+    }
     return (
       <TouchableOpacity style={styles.item} onPress={() => itemOnPress(item)}>
         <View style={styles.item_img}>
           <Image
             style={{width: SIZE.IMG, height: SIZE.IMG}}
-            source={{
-              uri: 'https://reactnative.dev/img/tiny_logo.png'
-            }}
+            source={imgSource}
           />     
         </View>   
         <View style={styles.item_detail}>
