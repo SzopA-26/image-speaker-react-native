@@ -11,7 +11,7 @@ import { COLOR, SIZE, STYLES } from '../../assets/properties';
 import Container from '../Container';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { nextDoc, previousDoc } from '../../services/actions';
+import { nextDoc, previousDoc } from '../../services/redux/actions';
 
 export default Home = ({ navigation }) => {
    const docs = useSelector(state => state.docs)

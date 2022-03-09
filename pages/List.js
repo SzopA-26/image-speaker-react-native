@@ -8,11 +8,11 @@ import {
   Image,
 } from 'react-native'
 import { Divider, Icon } from 'react-native-elements';
-import { COLOR, SIZE, STYLES } from '../../assets/properties';
-import Container from '../Container';
+import { COLOR, SIZE, STYLES } from '../assets/properties';
+import Container from './components/Container';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentDoc } from '../../services/actions';
+import { setCurrentDoc } from '../services/redux/actions';
 
 export default List = ({ navigation }) => {
   const items = useSelector(state => state.docs)
@@ -24,7 +24,7 @@ export default List = ({ navigation }) => {
   }
 
   const Item = ({item}) => {
-    let imgSource = require('../../assets/pdf-icon.png')
+    let imgSource = require('../assets/pdf-icon.png')
     if (item.uri !== '') {
       imgSource = {
         uri: item.uri

@@ -7,7 +7,7 @@ import {
    Platform,
 } from 'react-native';
 import { Divider, Icon } from 'react-native-elements';
-import { COLOR, SIZE } from '../assets/properties';
+import { COLOR, SIZE } from '../../assets/properties';
 
 import ActionSheet from "react-native-actionsheet";
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';

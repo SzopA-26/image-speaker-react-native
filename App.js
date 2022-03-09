@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './components/pages/Home'
 import List from './components/pages/List'
 import { Provider } from 'react-redux';
-import { store } from './services/store';
+import { store } from './services/redux/store';
 
 const Tab = createBottomTabNavigator();
 
