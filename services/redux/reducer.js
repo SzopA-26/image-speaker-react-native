@@ -7,7 +7,7 @@ const initial_state = {
             name: 'example',
             duration: 0,
             currentTime: 0,
-            uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png',
+            img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png',
             content: 'content',
         },
         {
@@ -15,7 +15,7 @@ const initial_state = {
             name: 'example1',
             duration: 0,
             currentTime: 0,
-            uri: '',
+            img: '',
             content: 'content',
         },
     ],

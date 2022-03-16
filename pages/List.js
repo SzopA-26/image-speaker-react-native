@@ -26,9 +26,9 @@ export default List = ({ navigation }) => {
 
   const Item = ({item}) => {
     let imgSource = require('../assets/pdf-icon.png')
-    if (item.uri !== '') {
+    if (item.img !== '') {
       imgSource = {
-        uri: item.uri
+        uri: item.img
       }
     }
     let hour = Math.floor(item.duration/3600)
