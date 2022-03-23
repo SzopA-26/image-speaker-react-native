@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
-import { COLOR, SIZE, STYLES, DATABASE_NAME, TABLE_NAME } from '../assets/properties';
+import { COLOR, SIZE, STYLES, DATABASE_NAME, TABLE_NAME, SERVER } from '../assets/properties';
 import Container from './components/Container';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,13 +16,18 @@ import { nextDoc, previousDoc, setCurrentDoc, setDocs } from '../services/redux/
 import SoundPlayer from 'react-native-sound-player'
 
 import { db } from '../App'
+import axios from 'axios';
 
 export default Home = ({ navigation }) => {
    const docs = useSelector(state => state.docs)
    const currentDoc = useSelector(state => state.currentDoc)
+   const switched = useSelector(state => state.switchDoc)
    const dispatch = useDispatch()
 
+   const [loader, setLoader] = useState(true)
+
    const [playerState, setPlayerState] = useState(0)
+   const [enablePlayer, setEnablePlayer] = useState(false)
    const [centerBtn, setCenterBtn] = useState('play-arrow')
    const [rightBtn, setRightBtn] = useState('skip-next')
    const [leftBtn, setLeftBtn] = useState('skip-next')
@@ -39,30 +44,50 @@ export default Home = ({ navigation }) => {
             (tx, result) => {
                const documents = []
                for (let i=0; i<result.rows.length; i++) {
-                  console.log('setup ' + JSON.stringify(result.rows.item(i)));
+                  console.log('setup ' + result.rows.item(i).id + " " + result.rows.item(i).name + ' url=' + result.rows.item(i).url)
                   documents[i] = result.rows.item(i)
-                  dispatch(setDocs(documents))
+                  if (i === result.rows.length - 1) {
+                     dispatch(setDocs(documents))
+                     loadSound(result.rows.item(currentDoc).url)
+                     console.log(result.rows.item(currentDoc).url);
+                  }
                }
             }
          )
       })
+      axios.get(SERVER)
+      .then((res) => {
+         console.log('Server status', res.status)
+         setLoader(false)
+      })
+      .catch((err) => {
+         console.log(err)
+         alert('Cannot connect to server.')
+         setLoader(true)
+      })
    }
 
-   const loadSound = (name, type) => {
-      SoundPlayer.loadSoundFile(name, type)
+   SoundPlayer.addEventListener('FinishedPlaying', ({ success }) => {
+      stopPlayer()
+   })
+
+   const loadSound = (url) => {
+      SoundPlayer.loadUrl(url)
       getInfo()
    }
 
-   const playSound = () => {
+   const playSound = (url='') => {
       try {
-         SoundPlayer.play()
-         SoundPlayer.addEventListener('FinishedPlaying', ({ success }) => {
-            stopPlayer()
-         })
-      } 
+         if (url === '') {
+            SoundPlayer.play()
+         }
+         else {
+            SoundPlayer.playUrl(url)
+         }
+      }
       catch (e) {
          alert('Cannot play the file.')
-         console.log('cannot play the song file', e)
+         console.log('cannot play the file', e)
       }
    }
   
@@ -71,6 +96,7 @@ export default Home = ({ navigation }) => {
          const info = await SoundPlayer.getInfo()
          setCurrentTime(info.currentTime)
          setDuration(info.duration)
+         setEnablePlayer(true)
       } 
       catch (e) {
          console.log('There is no song playing', e)
@@ -90,10 +116,24 @@ export default Home = ({ navigation }) => {
 
    useEffect(() => {
       setupData()
-      loadSound('test', 'mp3')
    }, [])
 
-   const centerBtnOnPress = (playerState) => {
+   useEffect(() => {
+      if (docs.length === 0) return
+      if (docs[currentDoc].url === '') {
+         stopPlayer()
+      }
+      else if (switched > 0 && !loader) {
+         centerBtnOnPress(1, docs[currentDoc].url)
+         playSound(docs[currentDoc].url)
+         getInfo()
+      } 
+      else if (switched > 0 && loader) {
+         alert('Cannot connect to server.')
+      }
+   }, [switched])
+
+   const centerBtnOnPress = (playerState, url='') => {
       setPlayerState(playerState)
 
       // pause
@@ -113,7 +153,7 @@ export default Home = ({ navigation }) => {
          }, 1000))
          // play
          if (playerState === 1) {
-            playSound()
+            url === '' ? playSound() : playSound(url)
          } 
          // resume
          else {
@@ -126,7 +166,7 @@ export default Home = ({ navigation }) => {
       // next
       if (playerState % 2 === 0) {
          dispatch(nextDoc())
-         stopPlayer()
+         loadSound(docs[currentDoc === docs.length-1 ? 0 : currentDoc+1].url)
       }
       // forward
       else {
@@ -143,24 +183,12 @@ export default Home = ({ navigation }) => {
       // previous
       if (playerState % 2 === 0) {
          dispatch(previousDoc())
-         stopPlayer()
-         loadSound('test', 'mp3')
+         loadSound(docs[currentDoc === 0 ? docs.length-1 : currentDoc-1].url)
       }
       // backward
       else {
-         SoundPlayer.seek(currentTime - 10)
+         SoundPlayer.seek(currentTime <= 10 ? 0 : currentTime - 10)
          setCurrentTime(currentTime <= 10 ? 0 : currentTime - 10)
-      }
-   }
-
-   const findById = (docs, id) => {
-      for (let i=0; i<docs.length; i++) {
-         if (id === docs[i].id) {
-            return docs[i]
-         }
-      }
-      return {
-         name: 'Documents not found.'
       }
    }
 
@@ -174,18 +202,25 @@ export default Home = ({ navigation }) => {
       return minutes + ':' + seconds
    }
 
+   const getMinFromFormat = (format) => {
+      return Number.parseInt(format.split(':')[0])
+   }
+
+   const getSecFromFormat = (format) => {
+      return Number.parseInt(format.split(':')[1])
+   }
+
    return (
       <Container navigator={navigation}>
-         <Text style={STYLES.HEADER}>
+         <Text style={STYLES.HEADER} accessible={true} accessibilityLabel='Image Speaker' accessibilityRole='header'>
             ImageSpeaker
          </Text>
          <View style={styles.panel}>
-            <View style={styles.document_block}>
+            <View style={styles.document_block} accessible={true} accessibilityLabel={docs[currentDoc]?.name}>
                <Text style={styles.document_text} numberOfLines={1}>
-                  {findById(docs, currentDoc).name}
+                  {docs[currentDoc]?.name} {docs.length === 0 ? 'Not have audio in list.' : ''}
                </Text>
             </View>
-
             <View style={styles.progress_bar}>
                <Slider
                   style={{width: '100%', height: 40}}
@@ -199,40 +234,92 @@ export default Home = ({ navigation }) => {
                      setCurrentTime(value * duration)
                   }}
                />
-               <View style={styles.timer_line}>
-                  <Text style={styles.timer_text}>{timeFormatterMMSS(currentTime)}</Text>
-                  <Text style={styles.timer_text}>{timeFormatterMMSS(duration)}</Text>
-               </View>
+               { docs.length === 0 ? 
+                  <View style={{alignItems: 'center'}}><Text></Text></View> 
+                  :
+                  loader ? 
+                  <View style={{alignItems: 'center'}}>
+                     <Text>Network Error</Text>
+                  </View>
+                  :
+                  <View style={styles.timer_line}>
+                     <Text style={styles.timer_text}
+                        accessible={true} 
+                        accessibilityLabel={
+                           getMinFromFormat(timeFormatterMMSS(currentTime)) + ' minute ' +
+                           getSecFromFormat(timeFormatterMMSS(currentTime)) + ' second'
+                        } 
+                     >
+                        {timeFormatterMMSS(currentTime)}
+                     </Text>
+                     <Text style={styles.timer_text}
+                        accessible={true} 
+                        accessibilityLabel={
+                           getMinFromFormat(timeFormatterMMSS(duration)) + ' minute ' +
+                           getSecFromFormat(timeFormatterMMSS(duration)) + ' second'
+                        } 
+                     >
+                        {timeFormatterMMSS(duration)}
+                     </Text>
+                  </View>
+               }
             </View>
 
             <View style={styles.control_panel}>
-               <TouchableOpacity style={[styles.control_btn, {transform: [{rotateY: '180deg'}]}]} onPress={leftBtnOnPress}>
+               <TouchableOpacity 
+                  accessible={true} 
+                  accessibilityRole='button'
+                  accessibilityLabel={playerState % 2 === 0 ? 'Go to previous audio file' : 'Backward 10 second'}
+                  disabled={loader} style={[styles.control_btn, {transform: [{rotateY: '180deg'}]}]} onPress={leftBtnOnPress}>
                   <Icon name={leftBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
-               <TouchableOpacity style={styles.control_btn} onPress={() => centerBtnOnPress(playerState + 1)}>
+               <TouchableOpacity 
+                  accessible={true}
+                  accessibilityRole='button'
+                  accessibilityLabel={playerState % 2 === 0 ? 'pause button' : 'play button'}
+                  disabled={loader || !enablePlayer} style={styles.control_btn} onPress={() => {
+                     const doc = docs[currentDoc]
+                     if (!doc.url || doc.url === '') {
+                        alert('File not found.')
+                     }
+                     else {
+                        centerBtnOnPress(playerState + 1)
+                     }
+                  }}
+               >
                   <Icon name={centerBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
-               <TouchableOpacity style={styles.control_btn} onPress={rightBtnOnPress}>
+               <TouchableOpacity 
+                  accessible={true} 
+                  accessibilityRole='button'
+                  accessibilityLabel={playerState % 2 === 0 ? 'Go to next audio file' : 'Forward 10 second'}
+                  disabled={loader} style={styles.control_btn} onPress={rightBtnOnPress}>
                   <Icon name={rightBtn} color={COLOR.MAIN_TEXT_COLOR} size={SIZE.CONTROL_ICON}/>
                </TouchableOpacity>
             </View>
 
-            <Pressable style={({ pressed }) => [
-               {
-                  backgroundColor: pressed ? COLOR.MIC_BTN_BGC : COLOR.MAIN_TEXT_COLOR,
-                  height: '30%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-               }
-            ]}>
+            <Pressable 
+               accessible={true} 
+               accessibilityRole='button'
+               accessibilityLabel='microphone button'
+               disabled={loader}
+               style={({ pressed }) => [
+                  {
+                     backgroundColor: pressed ? COLOR.MIC_BTN_BGC : COLOR.MAIN_TEXT_COLOR,
+                     height: '30%',
+                     justifyContent: 'center',
+                     alignItems: 'center',
+                     borderRadius: 8,
+                  }
+               ]}
+            >
                <Icon name='mic' color={COLOR.SEC_TEXT_COLOR} size={SIZE.MIC_ICON}/>
             </Pressable>
          </View>
       </Container>
-   );
-};
- 
+   )
+}
+
 const styles = StyleSheet.create({
    panel: {
       justifyContent: 'space-around',
@@ -278,4 +365,4 @@ const styles = StyleSheet.create({
       fontSize: SIZE.ITEM,
       fontWeight: 'bold',
    }, 
-});
+})

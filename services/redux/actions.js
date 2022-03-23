@@ -5,6 +5,7 @@ export const SET_CURRENT_DOC = 'SET_CURRENT_DOC';
 export const NEXT_DOC = 'NEXT_DOC';
 export const PREVIOUS_DOC = 'PREVIOUS_DOC';
 export const ADD_DOC = 'ADD_DOC';
+export const SWITCH_DOC = 'SWITCH_DOC';
 
 export const setDocs = (docs) => {
     return {
@@ -29,5 +30,11 @@ export const nextDoc = () => {
 export const previousDoc = () => {
     return {
         type: PREVIOUS_DOC,
+    }
+}
+
+export const switchDoc = () => {
+    return {
+        type: SWITCH_DOC,
     }
 }

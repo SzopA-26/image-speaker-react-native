@@ -12,15 +12,24 @@ import { COLOR, SIZE, STYLES } from '../assets/properties';
 import Container from './components/Container';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentDoc } from '../services/redux/actions';
+import { setCurrentDoc, switchDoc } from '../services/redux/actions';
 
 export default List = ({ navigation }) => {
   const items = useSelector(state => state.docs)
   const dispatch = useDispatch()
 
+  const findIndexById = (id) => {
+    for (let i=0; i<items.length; i++) {
+      if (items[i].id === id) {
+        return i
+      }
+    }
+  }
+
   const itemOnPress = (item) => {
-    dispatch(setCurrentDoc(item.id))
-    console.log('id ' + item.id);
+    dispatch(setCurrentDoc(findIndexById(item.id)))
+    dispatch(switchDoc())
+    console.log('id ' + item.id)
     navigation.navigate('Home')
   }
 
@@ -38,7 +47,7 @@ export default List = ({ navigation }) => {
     let sec = (item.duration%3600)%60
     sec = sec < 10 ? '0' + sec : '' + sec
     return (
-      <TouchableOpacity style={styles.item} onPress={() => itemOnPress(item)}>
+      <View style={styles.item}>
         <View style={styles.item_img}>
           <Image
             style={{width: SIZE.IMG, height: SIZE.IMG}}
@@ -51,10 +60,10 @@ export default List = ({ navigation }) => {
             {hour + ':' + min + ':' + sec}
           </Text>
         </View>
-        <View style={styles.play_btn}>
+        <TouchableOpacity style={styles.play_btn} onPress={() => itemOnPress(item)}>
           <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     )
   }
 
@@ -66,9 +75,9 @@ export default List = ({ navigation }) => {
       <ScrollView style={[styles.list_menu]}>
         {
           items.map((item) => {
-            if (item.name !== items[0].name) {
+            if (item.id !== items[0].id) {
               return (
-                <View key={item.name+'-'+item.duration}>
+                <View key={item.id+'-'+item.name}>
                   <Divider width={1.5} color={COLOR.ITEM_DIVIDER} style={[styles.divider]}></Divider>
                   <Item item={item}/>
                 </View>

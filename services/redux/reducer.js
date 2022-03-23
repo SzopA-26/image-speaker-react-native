@@ -1,25 +1,9 @@
 import * as actions from './actions';
 
 const initial_state = {
-    docs: [
-        {
-            id: 1,
-            name: 'example',
-            duration: 0,
-            currentTime: 0,
-            img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png',
-            content: 'content',
-        },
-        {
-            id: 2,
-            name: 'example1',
-            duration: 0,
-            currentTime: 0,
-            img: '',
-            content: 'content',
-        },
-    ],
-    currentDoc: 1
+    docs: [],
+    currentDoc: 0,
+    switchDoc: 0,
 };
 
 export const documentReducer = (state = initial_state, action) => {
@@ -47,13 +31,18 @@ export const documentReducer = (state = initial_state, action) => {
         case actions.NEXT_DOC:
             return {
                 ...state,
-                currentDoc: state.currentDoc + 1 > state.docs.length ? 1 : state.currentDoc + 1
+                currentDoc: state.currentDoc === state.docs.length-1 ? 0 : state.currentDoc+1
             };
         case actions.PREVIOUS_DOC:
             return {
                 ...state,
-                currentDoc: state.currentDoc - 1 < 1 ? state.docs.length : state.currentDoc - 1
+                currentDoc: state.currentDoc === 0 ? state.docs.length-1 : state.currentDoc-1
             };
+        case actions.SWITCH_DOC:
+            return {
+                ...state,
+                switchDoc: state.switchDoc + 1
+            }
         default:
             return state;
     }

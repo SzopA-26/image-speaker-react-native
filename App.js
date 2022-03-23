@@ -16,7 +16,7 @@ export const db = openDatabase(
     name: DATABASE_NAME,
     location: 'default'
   },
-  () => {console.log('connection success.')},
+  () => {console.log('db connection success.')},
   error => {console.log(error)}
 )
 
@@ -25,7 +25,7 @@ const createTable = () => {
     tx.executeSql(
       'CREATE TABLE IF NOT EXISTS '
       + TABLE_NAME
-      + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, duration INT, currentTime INT, img TEXT, content TEXT);',
+      + ' (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, duration INT, img TEXT, url TEXT);',
       [],
       () => {console.log('create table ' + TABLE_NAME + '.')},
       error => {console.log(error)}
@@ -33,17 +33,22 @@ const createTable = () => {
   })
 }
 
-const insertToTable = (item) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      'INSERT INTO ' + TABLE_NAME
-      + ' (name, duration, currentTime, img, content) '
-      + "VALUES ('" + item.name + "', " + item.duration + ", " + item.currentTime + ", '" + item.img + "', '" + item.content + "');",
-      [],
-      () => {console.log('insert ' + item.name + ' to table.')},
-      error => {console.log(error);}
-    )
-  })
+export const insertToTable = (item) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'INSERT INTO ' + TABLE_NAME
+        + ' (name, duration, img, url) '
+        + "VALUES ('" + item.name + "', " + item.duration + ", '" + item.img + "', '" + item.url + "');",
+        [],
+        () => {
+          console.log('insert ' + item.name + ' to table.')
+          resolve(item)
+        },
+        error => {console.log(error);}
+      )
+    })
+  }) 
 }
 
 const clearTable = () => {
@@ -62,22 +67,8 @@ const Tab = createBottomTabNavigator();
 export default App = () => {
   
   useEffect(() => {
-    // clearTable()
-    // createTable()
-    // insertToTable({
-    //   name: 'sqlite1',
-    //   currentTime: 0,
-    //   duration: 13423,
-    //   img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png',
-    //   content: ''
-    // })
-    // insertToTable({
-    //   name: 'sqlite2',
-    //   currentTime: 0,
-    //   duration: 13423,
-    //   img: '',
-    //   content: ''
-    // })
+    clearTable()
+    createTable()
   }, [])
 
   return (
