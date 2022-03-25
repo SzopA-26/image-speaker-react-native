@@ -14,9 +14,12 @@ import Container from './components/Container';
 import { useSelector, useDispatch } from 'react-redux';
 import { nextDoc, previousDoc, setCurrentDoc, setDocs } from '../services/redux/actions';
 import SoundPlayer from 'react-native-sound-player'
+import SoundRecorder from 'react-native-sound-recorder';
 
 import { db } from '../App'
 import axios from 'axios';
+
+const RNFS = require('react-native-fs')
 
 export default Home = ({ navigation }) => {
    const docs = useSelector(state => state.docs)
@@ -35,6 +38,11 @@ export default Home = ({ navigation }) => {
    const [currentTime, setCurrentTime] = useState(0)
    const [duration, setDuration] = useState(0)
    const [intervalID, setIntervalID] = useState(0)
+
+
+   SoundPlayer.addEventListener('FinishedPlaying', ({ success }) => {
+      stopPlayer()
+   })
 
    const setupData = async () => {
       await db.transaction((tx) => {
@@ -66,10 +74,6 @@ export default Home = ({ navigation }) => {
          setLoader(true)
       })
    }
-
-   SoundPlayer.addEventListener('FinishedPlaying', ({ success }) => {
-      stopPlayer()
-   })
 
    const loadSound = (url) => {
       SoundPlayer.loadUrl(url)
@@ -192,6 +196,30 @@ export default Home = ({ navigation }) => {
       }
    }
 
+   const micPressIn = () => {
+      SoundRecorder.start(SoundRecorder.PATH_CACHE + '/test.mp4')
+      .then(function() {
+         console.log('started recording');
+      });
+   }
+
+   const micPressOut =  () => {
+      SoundRecorder.stop()
+      .then(async (result) => {
+         console.log('stopped recording, audio file saved at: ' + result.path);
+         const base64 =  await RNFS.readFile(result.path, 'base64')
+         axios.post(SERVER + '/command', {
+            base64: base64
+         }).then((res) => {
+            console.log(res.data);
+            
+         }).catch((err) => {
+            console.log(err)
+            alert(err)
+         })
+      });
+   }
+
    const timeFormatterMMSS = (sec) => {
       sec = Math.round(sec)
       let minutes = Math.floor(sec / 60)
@@ -312,6 +340,9 @@ export default Home = ({ navigation }) => {
                      borderRadius: 8,
                   }
                ]}
+
+               onPressIn={micPressIn}
+               onPressOut={micPressOut}
             >
                <Icon name='mic' color={COLOR.SEC_TEXT_COLOR} size={SIZE.MIC_ICON}/>
             </Pressable>

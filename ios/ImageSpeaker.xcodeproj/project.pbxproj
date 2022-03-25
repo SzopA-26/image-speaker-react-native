@@ -14,7 +14,6 @@
 		295D9FEADB065A1CD2F891BC /* libPods-ImageSpeaker-ImageSpeakerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1090FB6E7BED50424B602A75 /* libPods-ImageSpeaker-ImageSpeakerTests.a */; };
 		6CEB46DEFBAA887255A9FE37 /* libPods-ImageSpeaker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC5B31BAAD2D3CB528F049F2 /* libPods-ImageSpeaker.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		8CAEFBED27E0D4D00082F4FC /* test.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8CAEFBEC27E0D4D00082F4FC /* test.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,7 +52,6 @@
 		757377E4D72F48BF91A388C1 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		7CD36A46FCDE4E879A5282E8 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ImageSpeaker/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8CAEFBEC27E0D4D00082F4FC /* test.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = test.mp3; sourceTree = "<group>"; };
 		9173FF385C044122BC0C0606 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		92A21774B46B64650E8D90E9 /* Pods-ImageSpeaker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageSpeaker.release.xcconfig"; path = "Target Support Files/Pods-ImageSpeaker/Pods-ImageSpeaker.release.xcconfig"; sourceTree = "<group>"; };
 		B4268879616F488B8B543FCC /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
@@ -157,7 +155,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				8CAEFBEC27E0D4D00082F4FC /* test.mp3 */,
 				13B07FAE1A68108700A75B9A /* ImageSpeaker */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ImageSpeakerTests */,
@@ -285,7 +282,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CAEFBED27E0D4D00082F4FC /* test.mp3 in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);

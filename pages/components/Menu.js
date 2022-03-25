@@ -128,11 +128,12 @@ export default Menu = ({ navigator }) => {
             title={'Select an Image or PDF File.'}
             options={optionArray}
             cancelButtonIndex={3}
-            onPress={ async (index) => {
+            onPress={async (index) => {
                let res = null
                if (index === 0) res = await launchCamera()
                else if (index === 1) res = await launchImageLibrary()
                else if (index === 2) res = await docPicker()
+               else {return}
                setLoading(true)
                if (res.errorCode || res.didCancel) {
                   if (res.errorCode) alert(res.errorCode)
