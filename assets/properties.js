@@ -36,4 +36,7 @@ export const STYLES = StyleSheet.create({
       fontWeight: 'bold',
       marginVertical: '5%'
    },
+   SPINNER: {
+      color: 'white'
+   }, 
 })

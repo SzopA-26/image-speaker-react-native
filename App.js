@@ -33,6 +33,17 @@ const createTable = () => {
   })
 }
 
+const clearTable = () => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "DROP TABLE " + TABLE_NAME + ";", 
+      [],
+      () => {console.log('drop table ' + TABLE_NAME + '.');},
+      error => {console.log(error);}
+    )
+  })
+}
+
 export const insertToTable = (item) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -45,21 +56,13 @@ export const insertToTable = (item) => {
           console.log('insert ' + item.name + ' to table.')
           resolve(item)
         },
-        error => {console.log(error);}
+        error => {
+          console.log(error)
+          reject(error)
+        }
       )
     })
   }) 
-}
-
-const clearTable = () => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "DROP TABLE " + TABLE_NAME + ";", 
-      [],
-      () => {console.log('drop table ' + TABLE_NAME + '.');},
-      error => {console.log(error);}
-    )
-  })
 }
 
 const Tab = createBottomTabNavigator();

@@ -6,7 +6,7 @@ import {
    Platform,
 } from 'react-native';
 import { Divider, Icon } from 'react-native-elements';
-import { COLOR, SERVER, SIZE, TABLE_NAME } from '../../assets/properties';
+import { COLOR, SERVER, SIZE, STYLES, TABLE_NAME } from '../../assets/properties';
 
 import ActionSheet from "react-native-actionsheet";
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
@@ -92,7 +92,7 @@ export default Menu = ({ navigator }) => {
             <Spinner
                visible={true}
                textContent={'Loading...'}
-               textStyle={styles.spinnerText}
+               textStyle={STYLES.SPINNER}
             />
          }
          <Divider width={2.5} color={COLOR.MAIN_TEXT_COLOR}/>
@@ -135,8 +135,7 @@ export default Menu = ({ navigator }) => {
                else if (index === 2) res = await docPicker()
                else {return}
                setLoading(true)
-               if (res.errorCode || res.didCancel) {
-                  if (res.errorCode) alert(res.errorCode)
+               if (res == null || res.errorCode || res.didCancel) {
                   setLoading(false)
                   return
                }
@@ -163,7 +162,8 @@ export default Menu = ({ navigator }) => {
                   
                }).catch((err) => {
                   console.log(err)
-                  alert(err)
+                  alert('Error: Invalid file.')
+                  setLoading(false)
                }).finally(() => {
                   setLoading(false)
                })
@@ -185,8 +185,5 @@ const styles = StyleSheet.create({
             marginTop: '5%'
          }
       })
-   },
-   spinnerText: {
-      color: '#FFF'
    },
 })

@@ -8,12 +8,13 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
-import { COLOR, SIZE, STYLES, DATABASE_NAME, TABLE_NAME, SERVER } from '../assets/properties';
+import Spinner from 'react-native-loading-spinner-overlay/lib';
+import { COLOR, SIZE, STYLES, TABLE_NAME, SERVER } from '../assets/properties';
 import Container from './components/Container';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { nextDoc, previousDoc, setCurrentDoc, setDocs } from '../services/redux/actions';
-import SoundPlayer from 'react-native-sound-player'
+import { nextDoc, previousDoc, setCurrentDoc, setDocs, switchDoc } from '../services/redux/actions';
+import SoundPlayer from 'react-native-sound-player';
 import SoundRecorder from 'react-native-sound-recorder';
 
 import { db } from '../App'
@@ -90,8 +91,8 @@ export default Home = ({ navigation }) => {
          }
       }
       catch (e) {
-         alert('Cannot play the file.')
-         console.log('cannot play the file', e)
+         alert('Cannot play this file.')
+         console.log('cannot play this file.', e)
       }
    }
   
@@ -124,6 +125,7 @@ export default Home = ({ navigation }) => {
 
    useEffect(() => {
       if (docs.length === 0) return
+      if (currentDoc >= docs.length) return
       if (docs[currentDoc].url === '') {
          stopPlayer()
       }
@@ -198,26 +200,53 @@ export default Home = ({ navigation }) => {
 
    const micPressIn = () => {
       SoundRecorder.start(SoundRecorder.PATH_CACHE + '/test.mp4')
-      .then(function() {
+      .then(() => {
          console.log('started recording');
       });
    }
 
    const micPressOut =  () => {
+      setLoader(true)
       SoundRecorder.stop()
       .then(async (result) => {
-         console.log('stopped recording, audio file saved at: ' + result.path);
+         console.log('stopped recording');
+         if (docs.length === 0) {
+            setLoader(false)
+            alert('There is no audio in the list.')
+            return
+         }
          const base64 =  await RNFS.readFile(result.path, 'base64')
          axios.post(SERVER + '/command', {
             base64: base64
          }).then((res) => {
-            console.log(res.data);
-            
+            setLoader(false)
+            console.log('voice command:', res.data);
+            if (res.data === '') {
+               alert('Invalid command.')
+               return
+            }
+            const index = findIndexByWord(res.data)
+            if (index === -1) {
+               alert('"' + res.data + '" audios not found.')
+               return
+            }
+            dispatch(setCurrentDoc(findIndexByWord(res.data)))
+            dispatch(switchDoc())
          }).catch((err) => {
             console.log(err)
+            setLoader(false)
             alert(err)
          })
       });
+   }
+
+   const findIndexByWord = (word) => {
+      word = word.toLowerCase()
+      for (let i=0; i<docs.length; i++) {
+         if (docs[i].name.toLowerCase().includes(word)) {
+            return i
+         }
+      } return -1
    }
 
    const timeFormatterMMSS = (sec) => {
@@ -240,13 +269,20 @@ export default Home = ({ navigation }) => {
 
    return (
       <Container navigator={navigation}>
+         {loader && 
+            <Spinner
+               visible={true}
+               textContent={'Loading...'}
+               textStyle={STYLES.SPINNER}
+            />
+         }
          <Text style={STYLES.HEADER} accessible={true} accessibilityLabel='Image Speaker' accessibilityRole='header'>
             ImageSpeaker
          </Text>
          <View style={styles.panel}>
             <View style={styles.document_block} accessible={true} accessibilityLabel={docs[currentDoc]?.name}>
                <Text style={styles.document_text} numberOfLines={1}>
-                  {docs[currentDoc]?.name} {docs.length === 0 ? 'Not have audio in list.' : ''}
+                  {docs[currentDoc]?.name} {docs.length === 0 ? 'There is no audio in the list.' : ''}
                </Text>
             </View>
             <View style={styles.progress_bar}>
@@ -256,6 +292,7 @@ export default Home = ({ navigation }) => {
                   maximumValue={1}
                   minimumTrackTintColor={COLOR.MAIN_TEXT_COLOR}
                   maximumTrackTintColor={COLOR.CONTROL_BTN_BGC}
+                  disabled={docs.length === 0}
                   value={duration === 0 ? 0 : currentTime / duration}
                   onValueChange={(value) => {
                      SoundPlayer.seek(value * duration)
@@ -264,11 +301,6 @@ export default Home = ({ navigation }) => {
                />
                { docs.length === 0 ? 
                   <View style={{alignItems: 'center'}}><Text></Text></View> 
-                  :
-                  loader ? 
-                  <View style={{alignItems: 'center'}}>
-                     <Text>Network Error</Text>
-                  </View>
                   :
                   <View style={styles.timer_line}>
                      <Text style={styles.timer_text}

@@ -69,11 +69,16 @@ export default List = ({ navigation }) => {
 
   return (
     <Container navigator={navigation}>
-      <Text style={[STYLES.HEADER]}>
+      <Text style={STYLES.HEADER}>
           ImageSpeaker
       </Text>
-      <ScrollView style={[styles.list_menu]}>
+      <ScrollView style={styles.list_menu}>
         {
+          items.length === 0 ? 
+          <Text style={styles.empty_text}>
+            There is no audio in the list.
+          </Text>
+          :
           items.map((item) => {
             if (item.id !== items[0].id) {
               return (
@@ -126,5 +131,9 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: '5%',
+  },
+  empty_text: {
+    color: 'black',
+    justifyContent: 'center'
   }
 })
