@@ -2,7 +2,7 @@ import { PixelRatio, StyleSheet } from "react-native"
 
 export const DATABASE_NAME = 'image-speaker'
 export const TABLE_NAME = 'Documents'
-export const SERVER = 'http://localhost:3000'
+export const SERVER = 'http://192.168.1.105:3000'
 
 export const COLOR = {
    MAIN_TEXT_COLOR: '#4267B2',
@@ -40,3 +40,18 @@ export const STYLES = StyleSheet.create({
       color: 'white'
    }, 
 })
+
+export const SPEAK = {
+   AUDIOS_NOT_FOUND: {
+      EN: 'Sorry, audios not found.',
+      TH: 'ขอโทษค่ะ ไม่พบไฟล์เสียงที่ต้องการ'
+   },
+   AUDIOS_FOUND: {
+      EN: (num) => {
+         return `I found ${num} audios in the list.`
+      },
+      TH: (num) => {
+         return `พบ ${num} ไฟล์เสียงที่ใกล้เคียง`
+      }
+   }
+}

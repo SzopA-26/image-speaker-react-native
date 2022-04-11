@@ -5,17 +5,20 @@ import {
    View,
    TouchableOpacity,
    Pressable,
+   Alert,
 } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { Switch } from 'react-native-switch';
 import Slider from '@react-native-community/slider';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
-import { COLOR, SIZE, STYLES, TABLE_NAME, SERVER } from '../assets/properties';
+import { COLOR, SIZE, STYLES, TABLE_NAME, SERVER, SPEAK } from '../assets/properties';
 import Container from './components/Container';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { nextDoc, previousDoc, setCurrentDoc, setDocs, switchDoc } from '../services/redux/actions';
 import SoundPlayer from 'react-native-sound-player';
-import SoundRecorder from 'react-native-sound-recorder';
+import Voice from '@react-native-voice/voice';
+import Tts from 'react-native-tts';
 
 import { db } from '../App'
 import axios from 'axios';
@@ -40,12 +43,82 @@ export default Home = ({ navigation }) => {
    const [duration, setDuration] = useState(0)
    const [intervalID, setIntervalID] = useState(0)
 
+   const [voiceResults, setVoiceResults] = useState('')
+   const [voiceLanguage, setVoiceLanguage] = useState('EN')
+   const [micDisabled, setMicDisabled] = useState(false)
+   const [searchCount, setSearchCount] = useState(0)
+
+   const changeLanguage = (value) => {
+      setVoiceResults('')
+      if (value) {
+         setVoiceLanguage('EN')
+         Tts.setDefaultLanguage('en-US')
+         Tts.setDefaultRate(0.4)
+      } else {
+         setVoiceLanguage('TH')
+         Tts.setDefaultLanguage('th-TH')
+         Tts.setDefaultRate(0.5)
+      }
+   }
+
+   const onSpeechStart = () => {
+      setVoiceResults('')
+      console.log('onSpeechStart');
+   }
+
+   const onSpeechEnd = () => {
+      console.log('onSpeechEnd')
+      // setSearchCount(searchCount + 1)
+   }
+
+   const onSpeechResults = (e) => {
+      setVoiceResults(e.value[0])
+      console.log('onSpeechResults: ', e.value[0])
+   }
+
+   const onSpeechError = (e) => {
+      console.error(e.error)
+   }
+
+   const search = (word) => {
+      console.log('search', word)
+      if (word === '') return
+      const audios = findAudiosByWord(word)
+      if (audios.length === 0) {
+         console.log('"' + word + '" audios not found.')
+         if (voiceLanguage === 'EN') {
+            Tts.speak(SPEAK.AUDIOS_NOT_FOUND.EN)
+         } else {
+            Tts.speak(SPEAK.AUDIOS_NOT_FOUND.TH)
+         }
+         return
+      }
+      if (audios.length === 1) {
+         dispatch(setCurrentDoc(findIndexById(audios[0].id)))
+         dispatch(switchDoc())
+      }
+      else {
+         if (voiceLanguage === 'EN') {
+            Tts.speak(SPEAK.AUDIOS_FOUND.EN(audios.length))
+         } else {
+            Tts.speak(SPEAK.AUDIOS_FOUND.TH(audios.length))
+         }
+         for (let i=0; i<audios.length; i++) {
+            Tts.speak(''+(i+1))
+            Tts.speak(audios[i].name)
+         }
+      }
+   }
 
    SoundPlayer.addEventListener('FinishedPlaying', ({ success }) => {
       stopPlayer()
    })
+   Tts.addEventListener('tts-start', () => {setMicDisabled(true)})
+   Tts.addEventListener('tts-progress', () => {})
+   Tts.addEventListener('tts-finish', () => {setMicDisabled(false)})
 
    const setupData = async () => {
+      setSearchCount(searchCount + 1)
       await db.transaction((tx) => {
          tx.executeSql(
             "SELECT * FROM " + TABLE_NAME + ";",
@@ -71,8 +144,11 @@ export default Home = ({ navigation }) => {
       })
       .catch((err) => {
          console.log(err)
-         alert('Cannot connect to server.')
-         setLoader(true)
+         Alert.alert('Something Wrong !', 'Cannot connect to a server.', [{text: 'Try Again'}]);
+         setLoader(false)
+         // setTimeout(() => {
+         //    setupData()
+         // }, 10000)
       })
    }
 
@@ -121,6 +197,14 @@ export default Home = ({ navigation }) => {
 
    useEffect(() => {
       setupData()
+      Voice.onSpeechStart = onSpeechStart
+      Voice.onSpeechEnd = onSpeechEnd
+      Voice.onSpeechPartialResults = onSpeechResults
+      Voice.onSpeechError = onSpeechError
+      Tts.setDefaultLanguage('en-US')
+      Tts.setDefaultRate(0.4)
+      Tts.setDucking(true)
+      Tts.setIgnoreSilentSwitch('obey')
    }, [])
 
    useEffect(() => {
@@ -138,6 +222,10 @@ export default Home = ({ navigation }) => {
          alert('Cannot connect to server.')
       }
    }, [switched])
+
+   useEffect(() => {
+      search(voiceResults)
+   }, [searchCount])
 
    const centerBtnOnPress = (playerState, url='') => {
       setPlayerState(playerState)
@@ -198,55 +286,37 @@ export default Home = ({ navigation }) => {
       }
    }
 
-   const micPressIn = () => {
-      SoundRecorder.start(SoundRecorder.PATH_CACHE + '/test.mp4')
-      .then(() => {
-         console.log('started recording');
-      });
+   const micPressIn = async () => {
+      if (playerState % 2 !== 0) {
+         centerBtnOnPress(playerState + 1)
+      }
+      const lang = voiceLanguage === 'EN' ? 'en-GB' : voiceLanguage === 'TH' ? 'th-TH' : ''
+      try {
+         await Voice.start(lang)
+      } catch (e) {
+         console.log(e);
+      }
    }
 
-   const micPressOut =  () => {
-      setLoader(true)
-      SoundRecorder.stop()
-      .then(async (result) => {
-         console.log('stopped recording');
-         if (docs.length === 0) {
-            setLoader(false)
-            alert('There is no audio in the list.')
-            return
-         }
-         const base64 =  await RNFS.readFile(result.path, 'base64')
-         axios.post(SERVER + '/command', {
-            base64: base64
-         }).then((res) => {
-            setLoader(false)
-            console.log('voice command:', res.data);
-            if (res.data === '') {
-               alert('Invalid command.')
-               return
-            }
-            const index = findIndexByWord(res.data)
-            if (index === -1) {
-               alert('"' + res.data + '" audios not found.')
-               return
-            }
-            dispatch(setCurrentDoc(findIndexByWord(res.data)))
-            dispatch(switchDoc())
-         }).catch((err) => {
-            console.log(err)
-            setLoader(false)
-            alert(err)
-         })
-      });
+   const micPressOut = async () => {
+      setSearchCount(searchCount + 1)
+      try {
+         await Voice.stop()
+      } catch (e) {
+         console.log(e);
+      }
    }
 
-   const findIndexByWord = (word) => {
-      word = word.toLowerCase()
+   const findIndexById = (id) => {
       for (let i=0; i<docs.length; i++) {
-         if (docs[i].name.toLowerCase().includes(word)) {
+         if (docs[i].id === id) {
             return i
          }
       } return -1
+   }
+
+   const findAudiosByWord = (word) => {
+      return docs.filter((doc) => doc.name.toLowerCase().includes(word.toLowerCase()))
    }
 
    const timeFormatterMMSS = (sec) => {
@@ -276,11 +346,36 @@ export default Home = ({ navigation }) => {
                textStyle={STYLES.SPINNER}
             />
          }
-         <Text style={STYLES.HEADER} accessible={true} accessibilityLabel='Image Speaker' accessibilityRole='header'>
-            ImageSpeaker
-         </Text>
+         <View style={styles.header}>
+            <Text style={STYLES.HEADER} accessible={true} accessibilityLabel='Image Speaker' accessibilityRole='header'>
+               ImageSpeaker
+            </Text>
+            <View style={styles.switch}>
+               <Switch
+               accessible={true}
+               accessibilityLabel={`switch to ${voiceLanguage === 'EN' ? 'thai' : 'english'} language.`}
+                  value={voiceLanguage === 'EN'}
+                  disabled={false}
+                  onValueChange={(value) => changeLanguage(value)}
+                  activeText={'EN'}
+                  inActiveText={'TH'}
+                  circleBorderWidth={2}
+                  backgroundActive={COLOR.MAIN_TEXT_COLOR}
+                  backgroundInactive={COLOR.MAIN_TEXT_COLOR}
+                  circleActiveColor={COLOR.CONTROL_BTN_BGC}
+                  circleInActiveColor={COLOR.CONTROL_BTN_BGC}
+                  // changeValueImmediately={true} // if rendering inside circle, change state immediately or wait for animation to complete
+                  // innerCircleStyle={{ alignItems: "center", justifyContent: "center" }} // style for inner animated circle for what you (may) be rendering inside the circle
+                  // switchLeftPx={2} // denominator for logic when sliding to TRUE position. Higher number = more space from RIGHT of the circle to END of the slider
+                  // switchRightPx={2} // denominator for logic when sliding to FALSE position. Higher number = more space from LEFT of the circle to BEGINNING of the slider
+                  // switchBorderRadius={30} 
+                  switchWidthMultiplier={2} // multiplied by the `circleSize` prop to calculate total width of the Switch
+
+               />
+            </View>
+         </View>
          <View style={styles.panel}>
-            <View style={styles.document_block} accessible={true} accessibilityLabel={docs[currentDoc]?.name}>
+            <View style={styles.document_block} accessible={true} accessibilityLabel={docs[currentDoc]?.name + ' audio file.'}>
                <Text style={styles.document_text} numberOfLines={1}>
                   {docs[currentDoc]?.name} {docs.length === 0 ? 'There is no audio in the list.' : ''}
                </Text>
@@ -362,7 +457,7 @@ export default Home = ({ navigation }) => {
                accessible={true} 
                accessibilityRole='button'
                accessibilityLabel='microphone button'
-               disabled={loader}
+               disabled={loader && micDisabled}
                style={({ pressed }) => [
                   {
                      backgroundColor: pressed ? COLOR.MIC_BTN_BGC : COLOR.MAIN_TEXT_COLOR,
@@ -384,6 +479,14 @@ export default Home = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+   header: {
+      flexDirection: 'row',
+      // justifyContent: 'space-between',
+   },
+   switch: {
+      justifyContent: 'center',
+      marginLeft: '12%'
+   },
    panel: {
       justifyContent: 'space-around',
       flex: 1, 

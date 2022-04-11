@@ -70,7 +70,7 @@ const Tab = createBottomTabNavigator();
 export default App = () => {
   
   useEffect(() => {
-    clearTable()
+    // clearTable() 
     createTable()
   }, [])
 

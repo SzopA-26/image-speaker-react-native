@@ -14,6 +14,7 @@ import DocumentPicker from 'react-native-document-picker';
 
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
+import DialogInput from 'react-native-dialog-input';
 import { db, insertToTable } from '../../App';
 import { useDispatch, useSelector } from 'react-redux';
 import { setDocs, setCurrentDoc, switchDoc } from '../../services/redux/actions';
@@ -36,11 +37,12 @@ const docPicker = async () => {
 }
 
 export default Menu = ({ navigator }) => {
-   const items = useSelector(state => state.docs)
-   const currentDoc = useSelector(state => state.currentDoc)
+   const docs = useSelector(state => state.docs)
    const dispatch = useDispatch()
 
    const [loading, setLoading] = useState(false)
+   const [isDialogVisible, setDialogVisible] = useState(false)
+   const [imageSelected, setImageSelected] = useState({})
 
    const actionSheet = useRef()
    const optionArray = [
@@ -77,24 +79,87 @@ export default Menu = ({ navigator }) => {
       })
    }
 
-   const findIndexByUrl = (url) => {
-      for (let i=0; i<items.length; i++) {
-         if (items[i].url === url) {
-            return i
+   const isDuplicatedName = (name) => {
+      const dup = docs.filter((doc) => {
+         return doc.name === name
+      })
+      return dup.length > 0
+   }
+
+   const createDuplicatedNumber = (name) => {
+      if (isDuplicatedName(name)) {
+         if (/^.* \(\d+\)$/.test(name)) {
+            const match = name.match(/ \(\d+\)$/)[0]
+            const num = parseInt(match.slice(2, match.length-1))
+            console.log('num', num);
+            return createDuplicatedNumber(name.replace(/\(\d+\)$/i, `(${num+1})`))
+         } else {
+            return createDuplicatedNumber(name + ' (1)')
          }
+      } else {
+         return name
       }
-      return -1
+   }
+
+   const upload = async (isPDF, image, fileName='Untitled Audio') => {
+      const data = isPDF ? image[0] : image.assets[0]
+      const name = isPDF ? data.name : data.fileName
+      const base64 = await RNFS.readFile(data.uri, 'base64')
+      const path = isPDF ? '/pdf' : '/image'
+      axios.post(
+         SERVER + path, 
+         {
+            name: Date.now() + '-' + name,
+            base64: base64
+         }
+      ).then(async (res) => {
+         const url = `${SERVER}/audio/${res.data.name}`
+         let audioName = isPDF ? name : fileName
+         if (isPDF && isDuplicatedName(audioName)) {
+            audioName = createDuplicatedNumber(audioName)
+         }
+         await insertToTable({
+            name: audioName,
+            duration: res.data.duration < 1000 ? 1 : Math.round(res.data.duration/1000),
+            img: isPDF ? '' : data.uri,
+            url: url,
+         })
+         console.log(await setupData(url))
+         navigator.navigate('Home')
+         setLoading(false)
+      }).catch((err) => {
+         console.log(err)
+         alert('Error: Invalid file.')
+         setLoading(false)
+      })
    }
 
    return (
       <>
-         {loading && 
-            <Spinner
-               visible={true}
-               textContent={'Loading...'}
-               textStyle={STYLES.SPINNER}
-            />
-         }
+         {<DialogInput 
+            isDialogVisible={isDialogVisible}
+            title={'Audio file name.'}
+            hintInput ={'Untitled Audio'}
+            submitInput={(input) => {
+               if (isDuplicatedName(input)) {
+                  alert('Error: This name is duplicated.')
+                  setDialogVisible(false)
+                  return
+               }
+               if (input !== '') {
+                  upload(false, imageSelected, input.trim())
+               }
+               setDialogVisible(false)
+            }}
+            closeDialog={() => {setDialogVisible(false)}}
+            dialogStyle={{backgroundColor: COLOR.DOCUMENT_BGC}}
+            modalStyle={{backgroundColor: 'rgba(0,0,0,0.2)'}}
+         />}
+         {loading && <Spinner
+            visible={true}
+            textContent={'Loading...'}
+            textStyle={STYLES.SPINNER}
+         />}
          <Divider width={2.5} color={COLOR.MAIN_TEXT_COLOR}/>
          <View style={[styles.menubar]}>
             <TouchableOpacity 
@@ -139,34 +204,12 @@ export default Menu = ({ navigator }) => {
                   setLoading(false)
                   return
                }
-               const data = index === 2 ? res[0] : res.assets[0]
-               const name = index === 2 ? data.name : data.fileName
-               const base64 = await RNFS.readFile(data.uri, 'base64')
-               const path = index === 2 ? '/pdf' : '/image'
-               axios.post(
-                  SERVER + path, 
-                  {
-                     name: Date.now() + '-' + name,
-                     base64: base64
-                  }
-               ).then(async (res) => {
-                  const url = `${SERVER}/audio/${res.data.name}`
-                  await insertToTable({
-                     name: index === 2 ? name : res.data.text.replace(/(\r\n|\n|\r)/gm, ' ').substring(0,50),
-                     duration: res.data.duration < 1000 ? 1 : Math.round(res.data.duration/1000),
-                     img: index === 2 ? '' : data.uri,
-                     url: url,
-                  })
-                  console.log(await setupData(url))
-                  navigator.navigate('Home')
-                  
-               }).catch((err) => {
-                  console.log(err)
-                  alert('Error: Invalid file.')
-                  setLoading(false)
-               }).finally(() => {
-                  setLoading(false)
-               })
+               setImageSelected(res)
+               if (index === 0 || index === 1) {
+                  setDialogVisible(true)
+                  setImageSelected(res)
+               }
+               else upload(true, res)
             }}
          />
       </>

@@ -55,12 +55,14 @@ export default List = ({ navigation }) => {
           />     
         </View>   
         <View style={styles.item_detail}>
-          <Text style={styles.item_name} numberOfLines={2}>{item.name}</Text>
+          <Text accessibilityLabel={item.name + ' audio file.'}
+           style={styles.item_name} numberOfLines={2}>{item.name}</Text>
           <Text style={styles.item_duration} numberOfLines={1}>
             {hour + ':' + min + ':' + sec}
           </Text>
         </View>
-        <TouchableOpacity style={styles.play_btn} onPress={() => itemOnPress(item)}>
+        <TouchableOpacity accessibilityLabel={item.name + ' audio file play'} accessibilityRole={'button'}
+          style={styles.play_btn} onPress={() => itemOnPress(item)}>
           <Icon name='play-arrow' color={COLOR.MAIN_TEXT_COLOR} size={SIZE.MENU_ICON}/>
         </TouchableOpacity>
       </View>
@@ -103,6 +105,7 @@ export default List = ({ navigation }) => {
 const styles = StyleSheet.create({
   list_menu: {
     marginTop: '5%',
+    marginBottom: '5%',
   },
   item: {
     flexDirection: 'row',
